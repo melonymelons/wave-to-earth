@@ -6,16 +6,14 @@ import path from 'node:path';
 import { resolveByteRange } from './ranges.js';
 
 const publicRoot = fileURLToPath(new URL('../public/', import.meta.url));
-const videoRoot = fileURLToPath(new URL('../videos/', import.meta.url));
 const port = Number(process.env.PORT || 3000);
 const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.png': 'image/png' };
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
     const decoded = decodeURIComponent(url.pathname);
-    const videoRequest = decoded.startsWith('/videos/');
-    const root = videoRequest ? videoRoot : publicRoot;
-    const filename = videoRequest ? decoded.slice('/videos/'.length) : decoded === '/' ? 'index.html' : decoded.slice(1);
+    const root = publicRoot;
+    const filename = decoded === '/' ? 'index.html' : decoded.slice(1);
     const target = path.resolve(root, filename);
     const relative = path.relative(root, target);
     if (relative.startsWith('..') || path.isAbsolute(relative) || relative.split(path.sep).some(part => part.startsWith('.'))) {
