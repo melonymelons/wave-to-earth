@@ -1,12 +1,12 @@
 {
-  "name": "wave-to-earth-scenes",
+  "name": "wave-to-earth",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Eighteen songs, eighteen places to feel something.",
+  "description": "A concert video playlist from wave to earth’s bad pieces show in Philadelphia.",
   "scripts": {
-    "dev": "node server.mjs",
-    "start": "node server.mjs",
-    "check": "node --check app.js && node --check playback.js && node --check countdown.js && node --check stars.js && node --check strip.js && node --check dial.js && node --check scenes.js && node --check afternoon.js && node --check lava.js && node --check player.js && node --check server.mjs && node --check ranges.js && node --test tests/*.test.js"
+    "dev": "node server/index.mjs",
+    "start": "node server/index.mjs",
+    "check": "node scripts/check.mjs"
   }
 }

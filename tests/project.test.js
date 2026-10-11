@@ -1,11 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { songs, spotifyUri, spotifyUrl } from '../songs.js';
-import { paintScene } from '../scenes.js';
-import { SpotifyPlayer, embedUrl } from '../player.js';
+import { songs } from '../public/data/songs.js';
 import { readFile } from 'node:fs/promises';
 
-test('the collection contains 18 distinct songs in the requested order', () => {
+test('the playlist contains 18 recorded clips in the requested order', () => {
   assert.equal(songs.length, 18);
   assert.deepEqual(songs.map(song => song.title), [
     'sing it all again', 'everything comes and goes', "talking 'bout u", 'skylark', 'courage',
@@ -13,97 +11,16 @@ test('the collection contains 18 distinct songs in the requested order', () => {
     'annie.', 'calla', 'heaven and hell', 'closing', 'daisy', 'homesick', 'love',
   ]);
   assert.equal(new Set(songs.map(song => song.id)).size, 18);
-  assert.equal(new Set(songs.map(song => song.spotify)).size, 18);
   for (const song of songs) {
-    assert.match(song.spotify, /^[a-zA-Z0-9]{22}$/);
-    assert.match(spotifyUri(song), /^spotify:track:/);
-    assert.match(spotifyUrl(song), /^https:\/\/open\.spotify\.com\/track\//);
-    assert.equal(song.sky.length, 3);
+    assert.equal(song.video, `./videos/${song.id}.mp4`);
+    assert.equal(song.poster, `./videos/${song.id}.png`);
+    assert.ok(song.videoDurationSeconds > 0);
   }
-});
-
-test('all scenes render with finite drawing coordinates on desktop, mobile, and landscape', () => {
-  let draws = 0;
-  let stack = 0;
-  const gradient = { addColorStop() {} };
-  const numeric = (...args) => {
-    for (const arg of args) if (typeof arg === 'number') assert.ok(Number.isFinite(arg));
-    draws++;
-  };
-  const ctx = new Proxy({}, {
-    get(_, name) {
-      if (name === 'save') return () => stack++;
-      if (name === 'restore') return () => { stack--; assert.ok(stack >= 0); };
-      if (name === 'createLinearGradient' || name === 'createRadialGradient') return (...args) => { numeric(...args); return gradient; };
-      if (name === 'ellipse') return (x, y, rx, ry, ...rest) => { numeric(x, y, rx, ry, ...rest); assert.ok(rx > 0 && ry > 0); };
-      return numeric;
-    },
-    set(_, name, value) { if (typeof value === 'number') assert.ok(Number.isFinite(value), name); return true; },
-  });
-  for (const [width, height] of [[1440, 900], [390, 844], [844, 390], [320, 568]]) {
-    for (const song of songs) {
-      for (const time of [0, 17, 10000]) {
-        paintScene(ctx, width, height, song, time, { x: -.5, y: .5 });
-        assert.equal(stack, 0, `${song.id}: balanced canvas state`);
-      }
-    }
-  }
-  assert.ok(draws > 10000);
-});
-
-function fakeController() {
-  const listeners = new Map();
-  const calls = [];
-  return {
-    calls,
-    addListener(name, handler) { listeners.set(name, handler); },
-    pause() { calls.push(['pause']); },
-    play() { calls.push(['play']); },
-    loadUri(uri) { calls.push(['load', uri]); },
-    fire(name, data = {}) { listeners.get(name)?.({ data }); },
-  };
-}
-
-test('a paused scene change selects its Spotify song without starting playback', () => {
-  const player = new SpotifyPlayer(songs[0], () => {});
-  const controller = fakeController();
-  player.connect(controller);
-  player.select(songs[7]);
-  assert.deepEqual(controller.calls.at(-1), ['load', spotifyUri(songs[7])]);
-  controller.fire('ready');
-  assert.equal(controller.calls.some(([call]) => call === 'play'), false);
-});
-
-test('native Spotify playback can continue when a listener changes scenes', () => {
-  const player = new SpotifyPlayer(songs[0], () => {});
-  const controller = fakeController();
-  player.connect(controller);
-  controller.fire('playback_update', { playingURI: spotifyUri(songs[0]), isPaused: false });
-  player.select(songs[7]);
-  controller.fire('ready');
-  assert.equal(controller.calls.at(-1)[0], 'play');
-  assert.equal(player.resumeOnReady, false);
-});
-
-test('stale Spotify events cannot mark the new song as playing', () => {
-  const player = new SpotifyPlayer(songs[0], () => {});
-  const controller = fakeController();
-  player.connect(controller);
-  player.select(songs[7]);
-  controller.fire('playback_update', { playingURI: spotifyUri(songs[0]), isPaused: false });
-  assert.equal(player.playing, false);
-});
-
-test('the native fallback switches to the selected Spotify embed', () => {
-  const selected = [];
-  const player = new SpotifyPlayer(songs[0], song => selected.push(embedUrl(song)));
-  player.select(songs[7]);
-  assert.deepEqual(selected, [`https://open.spotify.com/embed/track/${songs[7].spotify}?theme=0`]);
 });
 
 test('video-strip mode keeps the black layout and fixed title without previous UI', async () => {
-  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-  const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
+  const html = await readFile(new URL('../public/index.html', import.meta.url), 'utf8');
+  const app = await readFile(new URL('../public/js/app.js', import.meta.url), 'utf8');
   assert.doesNotMatch(html, /id="previous"|id="next"/);
   assert.match(html, /id="chapter-count"/);
   assert.match(html, /<title>w2e x zkng<\/title>/);
@@ -122,4 +39,26 @@ test('video-strip mode keeps the black layout and fixed title without previous U
   assert.doesNotMatch(html, /site-header|dial-readout|motion-toggle|collection-dialog/);
   assert.doesNotMatch(html, /spotify-embed|iframe|id="play"|add-audio|clip-file|song-audio|spotify-panel/);
   assert.doesNotMatch(app, /SpotifyPlayer|iframe-api|onSpotifyIframeApiReady|ClipPlayer|createObjectURL|clip-file/);
+});
+
+
+test('page assets and relative module imports resolve in the new folders', async () => {
+  const publicRoot = new URL('../public/', import.meta.url);
+  const html = await readFile(new URL('index.html', publicRoot), 'utf8');
+  const visited = new Set();
+  async function verifyModule(url) {
+    if (visited.has(url.href)) return;
+    visited.add(url.href);
+    const source = await readFile(url, 'utf8');
+    for (const match of source.matchAll(/from\s+['"]([^'"]+)['"]/g)) {
+      if (match[1].startsWith('.')) await verifyModule(new URL(match[1], url));
+    }
+  }
+  for (const match of html.matchAll(/(?:src|href)="(\.\/[^"?]+)(?:\?[^" ]*)?"/g)) {
+    const url = new URL(match[1], publicRoot);
+    await readFile(url);
+    if (url.pathname.endsWith('.js')) await verifyModule(url);
+  }
+  assert.ok(visited.has(new URL('js/app.js', publicRoot).href));
+  assert.ok(visited.has(new URL('data/songs.js', publicRoot).href));
 });

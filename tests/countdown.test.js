@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PlaylistCountdown, playlistDuration, formatCountdown } from '../countdown.js';
+import { PlaylistCountdown, playlistDuration, formatCountdown } from '../public/js/countdown.js';
 
-test('duration totals use exact videos, song estimates, and new metadata', () => {
+test('duration totals use recorded clip lengths and new metadata', () => {
   const songs = [
-    { id: 'one', durationSeconds: 240, videoDurationSeconds: 120 },
-    { id: 'two', durationSeconds: 300 },
+    { id: 'one', videoDurationSeconds: 120 },
+    { id: 'two', videoDurationSeconds: 300 },
   ];
   assert.equal(playlistDuration(songs), 420);
   assert.equal(playlistDuration(songs, new Map([['two', 180]])), 300);

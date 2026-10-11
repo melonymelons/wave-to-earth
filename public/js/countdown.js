@@ -1,6 +1,6 @@
 export function playlistDuration(songs, actual = new Map()) {
   return songs.reduce((total, song) => {
-    const seconds = actual.get(song.id) ?? song.videoDurationSeconds ?? song.durationSeconds ?? 0;
+    const seconds = actual.get(song.id) ?? song.videoDurationSeconds ?? 0;
     return total + (Number.isFinite(seconds) && seconds > 0 ? seconds : 0);
   }, 0);
 }

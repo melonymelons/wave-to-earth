@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveByteRange } from '../ranges.js';
+import { resolveByteRange } from '../server/ranges.js';
 
 test('audio byte ranges support bounded, open-ended, and suffix requests', () => {
   assert.equal(resolveByteRange(undefined, 100), null);

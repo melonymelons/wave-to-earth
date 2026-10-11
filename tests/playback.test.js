@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { VideoPlayback } from '../playback.js';
+import { VideoPlayback } from '../public/js/playback.js';
 
 function clip() {
   return {

@@ -1,0 +1,27 @@
+// Concert clips in playlist order, with exact recorded runtimes.
+export const songs = [
+  ['sing-it-all-again', 'sing it all again', 121.387],
+  ['everything-comes-and-goes', 'everything comes and goes', 253.462],
+  ['talking-bout-u', "talking 'bout u", 198.563],
+  ['skylark', 'skylark', 180.472],
+  ['courage', 'courage', 183.410],
+  ['cherry-flavored-love-inside-your-heart', 'cherry flavored love inside your heart', 227.717],
+  ['hyang', 'hyang', 210.627],
+  ['seasons', 'seasons', 259.240],
+  ['you', 'you', 475.812],
+  ['bad', 'bad', 329.508],
+  ['sunny-days', 'sunny days', 242.032],
+  ['annie', 'annie.', 464.295],
+  ['calla', 'calla', 327.375],
+  ['heaven-and-hell', 'heaven and hell', 290.842],
+  ['closing', 'closing', 309.375],
+  ['daisy', 'daisy', 472.980],
+  ['homesick', 'homesick', 340.235],
+  ['love', 'love', 489.585],
+].map(([id, title, videoDurationSeconds]) => ({
+  id,
+  title,
+  videoDurationSeconds,
+  video: `./videos/${id}.mp4`,
+  poster: `./videos/${id}.png`,
+}));

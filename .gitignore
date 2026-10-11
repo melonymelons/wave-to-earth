@@ -4,5 +4,4 @@ node_modules/
 .env.*
 !.env.example
 dist/
-/videos/*
-!/videos/README.md
+/videos/

@@ -1,4 +1,4 @@
-import { songs } from './songs.js';
+import { songs } from '../data/songs.js';
 import { ArcDial } from './dial.js';
 import { StarField } from './stars.js';
 import { wrapSongIndex, wrappedDistance, nearestOccurrence, nextVideoIndex } from './strip.js';
@@ -143,7 +143,6 @@ arcDial.onFrame = position => {
 function frameStride() {
   return frames[0].offsetWidth + parseFloat(getComputedStyle(strip).gap);
 }
-function scrollPosition() { return arcDial.position; }
 function moveDial(position, direct = false, following = false) {
   if (!Number.isFinite(position)) return;
   dialTarget = position;
@@ -201,9 +200,7 @@ function bindDrag(surface, isDial) {
     if (!event.isPrimary || event.button !== 0) return;
     clearTimeout(wheelTimer);
     wheelActive = false;
-    moveDial(scrollPosition(), true);
-    const video = event.target.closest('video');
-    if (video && event.clientY > video.getBoundingClientRect().bottom - 45) return;
+    moveDial(arcDial.position, true);
     drag = { id: event.pointerId, x: event.clientX, start: arcDial.position, moved: false, surface };
   });
   surface.addEventListener('pointermove', event => {

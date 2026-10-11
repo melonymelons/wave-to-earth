@@ -5,16 +5,20 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { resolveByteRange } from './ranges.js';
 
-const root = fileURLToPath(new URL('.', import.meta.url));
+const publicRoot = fileURLToPath(new URL('../public/', import.meta.url));
+const videoRoot = fileURLToPath(new URL('../videos/', import.meta.url));
 const port = Number(process.env.PORT || 3000);
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8', '.mp3': 'audio/mpeg', '.m4a': 'audio/mp4', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.aac': 'audio/aac', '.flac': 'audio/flac', '.webm': 'video/webm', '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.mp4': 'video/mp4', '.png': 'image/png' };
 const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
     const decoded = decodeURIComponent(url.pathname);
-    const target = path.resolve(root, `.${decoded === '/' ? '/index.html' : decoded}`);
+    const videoRequest = decoded.startsWith('/videos/');
+    const root = videoRequest ? videoRoot : publicRoot;
+    const filename = videoRequest ? decoded.slice('/videos/'.length) : decoded === '/' ? 'index.html' : decoded.slice(1);
+    const target = path.resolve(root, filename);
     const relative = path.relative(root, target);
-    if (relative.startsWith('..') || path.isAbsolute(relative) || relative.split(path.sep).some(part => part.startsWith('.')) || relative.startsWith('tests' + path.sep)) {
+    if (relative.startsWith('..') || path.isAbsolute(relative) || relative.split(path.sep).some(part => part.startsWith('.'))) {
       response.writeHead(403); response.end('Forbidden'); return;
     }
     const info = await stat(target);

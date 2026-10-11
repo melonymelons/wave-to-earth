@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { wrapSongIndex, wrappedDistance, nearestOccurrence, nextVideoIndex } from '../strip.js';
+import { wrapSongIndex, wrappedDistance, nearestOccurrence, nextVideoIndex } from '../public/js/strip.js';
 
 test('automatic advance follows uploaded videos and wraps past empty slots', () => {
   const clips = [true, true, true, true, true, false, false];

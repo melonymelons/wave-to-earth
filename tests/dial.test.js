@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ArcDial, advanceSpring, createArcGeometry } from '../dial.js';
+import { ArcDial, advanceSpring, createArcGeometry } from '../public/js/dial.js';
 
 test('settling gives a small bounce and converges to the selected song', () => {
   let state = { position: 0, velocity: 0 };
