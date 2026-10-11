@@ -1,0 +1,12 @@
+{
+  "name": "wave-to-earth-scenes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Eighteen songs, eighteen places to feel something.",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "check": "node --check app.js && node --check playback.js && node --check countdown.js && node --check stars.js && node --check strip.js && node --check dial.js && node --check scenes.js && node --check afternoon.js && node --check lava.js && node --check player.js && node --check server.mjs && node --check ranges.js && node --test tests/*.test.js"
+  }
+}

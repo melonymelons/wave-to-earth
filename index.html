@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="A strip of wave to earth concert memories. Scroll from one song to the next." />
+    <title>w2e x zkng</title>
+    <link rel="icon" href="./favicon.svg?v=bad-pieces" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas class="star-field" id="star-field" aria-hidden="true"></canvas>
+    <header class="corner-labels"><span class="song-name">wave to earth</span><time class="playlist-timer" id="playlist-timer" datetime="PT0S" aria-label="Playback countdown">--:--:--</time></header>
+    <main class="video-strip" id="video-strip" aria-label="Concert video strip. Scroll left or right between songs." tabindex="0"></main>
+    <nav class="song-dial" id="song-dial" aria-label="Song dial: swipe left or right to change videos">
+      <div class="dial-viewport" data-scale="0.8">
+        <svg class="dial-arc" viewBox="0 0 840 180" aria-hidden="true"><path id="dial-arc-path" /></svg>
+        <div id="dial-ticks"></div>
+      </div>
+    </nav>
+    <footer class="experience-footer">
+      <span>a feeling at a time</span>
+      <span id="chapter-count" aria-live="polite">01 / 18</span>
+    </footer>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
